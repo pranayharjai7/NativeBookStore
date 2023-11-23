@@ -1,6 +1,7 @@
 package com.nokia.nativebookstore;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,6 +29,14 @@ public class MainActivity extends AppCompatActivity {
         bookStore.addBook(book3);
         bookStore.addBook(book4);
 
-        binding.sampleText.setText("Total Book revenue: " + bookStore.calculateTotalRevenue());
+        binding.booksTextView.setText(bookStore.toString());
+
+        Book book5 = new Book("Book4", "Author4", 1114, 150);
+        bookStore.updateBook(book5);
+
+        binding.updatedBooksTextView.setText(bookStore.toString());
+
+        Book result = bookStore.findBookByISBN(1114);
+        if (result != null) Toast.makeText(this, "" + result.getPrice(), Toast.LENGTH_LONG).show();
     }
 }

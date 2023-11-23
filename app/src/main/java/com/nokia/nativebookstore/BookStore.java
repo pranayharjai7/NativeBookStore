@@ -25,15 +25,43 @@ public class BookStore {
     }
 
     public Book findBookByISBN(double ISBN) {
-        return books.stream()
+        List<Book> bookList = books.stream()
                 .filter(book -> book.getISBN() == ISBN)
-                .collect(Collectors.toList())
-                .get(0);
+                .collect(Collectors.toList());
+        if (bookList.isEmpty()) {
+            return null;
+        }
+        return bookList.get(0);
     }
 
     public List<Book> getAllBooks() {
         return books;
     }
 
-    public native int calculateTotalRevenue();
+    public int calculateTotalRevenue() {
+        try {
+            return calculateTotalRevenueInternal();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public void updateBook(Book book) {
+        try {
+            updateBookInternal(book);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private native void updateBookInternal(Book book);
+
+    private native int calculateTotalRevenueInternal();
+
+    @Override
+    public String toString() {
+        return "books=\n" + books +
+                '}';
+    }
 }

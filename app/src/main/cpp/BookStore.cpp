@@ -2,56 +2,104 @@
 // Created by harjai on 13-Nov-23.
 //
 
-#include <jni.h>
+#include "BookStore.h"
 
-jobject getBookList(JNIEnv *env, jobject obj, jclass bookStore);
+BookStore::BookStore(JNIEnv *env, jobject bookStoreObj) : env(env), bookStoreObj(bookStoreObj) {
+    bookStore = env->GetObjectClass(bookStoreObj);
+    exception = env->FindClass("java/lang/Exception");
+    list = env->FindClass("java/util/List");
+}
 
-jmethodID getPriceMethodID(JNIEnv *env);
+BookStore::~BookStore() {
+    //TBD
+}
 
-jsize getListSize(JNIEnv *env, jobject list);
+jint BookStore::calculateTotalRevenue() {
+    jobject books = BookStore::getBookList();
+    jmethodID getPrice = env->GetMethodID(env->FindClass("com/nokia/nativebookstore/Book"),
+                                          "getPrice", "()I");
+    jsize listSize = getListSize(books);
+    jmethodID get = env->GetMethodID(list, "get", "(I)Ljava/lang/Object;");
 
-jmethodID listGet(JNIEnv *env);
-
-jclass List;
-
-extern "C"
-JNIEXPORT jint JNICALL
-Java_com_nokia_nativebookstore_BookStore_calculateTotalRevenue(JNIEnv *env, jobject obj) {
-    jclass bookStore = env->GetObjectClass(obj);
-
-    jobject bookList = getBookList(env, obj, bookStore);
-    List = env->GetObjectClass(bookList);
-
-    jmethodID getPrice = getPriceMethodID(env);
     jint totalRevenue = 0;
-
-    jsize listSize = getListSize(env, bookList);
-    jmethodID get = listGet(env);
-
     for (jsize i = 0; i < listSize; i++) {
-        jobject book = env->CallObjectMethod(bookList, get, i);
+        jobject book = env->CallObjectMethod(books, get, i);
         jint price = env->CallIntMethod(book, getPrice);
+
+        //price exception
+        if (price < 0) {
+            throwException("Invalid Price Detected");
+            return -1;
+        }
+
         totalRevenue += price;
     }
 
     return totalRevenue;
 }
 
-jmethodID listGet(JNIEnv *env) {
-    return env->GetMethodID(List, "get", "(I)Ljava/lang/Object;");
+void BookStore::updateBook(jobject bookObj) {
+    jclass book = env->GetObjectClass(bookObj);
+
+    //Getting new fields from sent parameter "book"
+    jfieldID name_ID = env->GetFieldID(book, "name", "Ljava/lang/String;");
+    auto newName = static_cast<jstring>(env->GetObjectField(bookObj, name_ID));
+
+    jfieldID author_ID = env->GetFieldID(book, "author", "Ljava/lang/String;");
+    auto newAuthor = static_cast<jstring>(env->GetObjectField(bookObj, author_ID));
+
+    jfieldID price_ID = env->GetFieldID(book, "price", "I");
+    jint newPrice = env->GetIntField(bookObj, price_ID);
+
+    //getting ISBN
+    jfieldID ISBN_ID = env->GetFieldID(book, "ISBN", "D");
+    jdouble ISBN = env->GetDoubleField(bookObj, ISBN_ID);
+
+    //calling findBookByISBN(ISBN) from java
+    jmethodID findBookByISBN_ID = env->GetMethodID(bookStore, "findBookByISBN",
+                                                   "(D)Lcom/nokia/nativebookstore/Book;");
+    jobject foundBook = env->CallObjectMethod(bookStoreObj, findBookByISBN_ID, ISBN);
+
+    if (foundBook != nullptr) {
+        env->SetObjectField(foundBook, name_ID, newName);
+        env->SetObjectField(foundBook, author_ID, newAuthor);
+        env->SetIntField(foundBook, price_ID, newPrice);
+
+    } else {
+        throwException("Book Not Found");
+    }
 }
 
-jsize getListSize(JNIEnv *env, jobject list) {
-    return env->CallIntMethod(list, env->GetMethodID(List, "size", "()I"));
-}
-
-jmethodID getPriceMethodID(JNIEnv *env) {
-    return env->GetMethodID(env->FindClass("com/nokia/nativebookstore/Book"),
-                            "getPrice", "()I");
-}
-
-jobject getBookList(JNIEnv *env, jobject obj, jclass bookStore) {
+jobject BookStore::getBookList() {
     jmethodID getAllBooksMethodID = env->GetMethodID(bookStore, "getAllBooks",
                                                      "()Ljava/util/List;");
-    return env->CallObjectMethod(obj, getAllBooksMethodID);
+    return env->CallObjectMethod(bookStoreObj, getAllBooksMethodID);
 }
+
+jsize BookStore::getListSize(jobject list) {
+    jmethodID sizeID = env->GetMethodID(this->list, "size", "()I");
+    return env->CallIntMethod(list, sizeID);
+}
+
+void BookStore::throwException(const char *message) {
+    if (!env->ExceptionCheck()) {
+        env->ThrowNew(exception, message);
+    }
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_nokia_nativebookstore_BookStore_calculateTotalRevenueInternal(JNIEnv *env,
+                                                                       jobject bookStoreObj) {
+    BookStore bookStore(env, bookStoreObj);
+    return bookStore.calculateTotalRevenue();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_nokia_nativebookstore_BookStore_updateBookInternal(JNIEnv *env, jobject bookStoreObj,
+                                                            jobject bookObj) {
+    BookStore bookStore(env, bookStoreObj);
+    bookStore.updateBook(bookObj);
+}
+
