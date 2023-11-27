@@ -6,8 +6,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.nokia.nativebookstore.utils.CallbackJava;
 import com.nokia.nativebookstore.databinding.ActivityMainBinding;
+import com.nokia.nativebookstore.utils.CallbackJava;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
         binding.updatedBooksTextView.setText(bookStore.toString());
 
         Book result = bookStore.findBookByISBN(1114);
-        if (result != null) Toast.makeText(this, "" + bookStore.calculateTotalRevenue(), Toast.LENGTH_LONG).show();
+        if (result != null)
+            Toast.makeText(this, "" + bookStore.calculateTotalRevenue(), Toast.LENGTH_LONG).show();
     }
 
     public void callbackButtonClicked(View view) {
@@ -55,5 +56,13 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void successCallbackCppButtonClicked(View view) {
+        bookStore.onCallbackSuccessCppInternal("CallBack to success");
+    }
+
+    public void failureCallbackCppButtonClicked(View view) {
+        bookStore.onCallbackFailureCppInternal("Callback to Failure");
     }
 }

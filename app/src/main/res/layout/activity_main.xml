@@ -34,10 +34,21 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:text="Callback:"
+        android:text="Callback to java:"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/updatedBooksTextView" />
+
+    <TextView
+        android:id="@+id/callbackToCppTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Callback to C++:"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/callbackTextView" />
 
     <Button
         android:id="@+id/callbackButton"
@@ -45,9 +56,31 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:onClick="callbackButtonClicked"
-        android:text="Last Book Check"
+        android:text="Last Updated Book"
         app:layout_constraintBottom_toBottomOf="@+id/callbackTextView"
         app:layout_constraintStart_toEndOf="@+id/callbackTextView"
         app:layout_constraintTop_toTopOf="@+id/callbackTextView" />
+
+    <Button
+        android:id="@+id/successCallbackCppButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:onClick="successCallbackCppButtonClicked"
+        android:text="success"
+        app:layout_constraintBottom_toBottomOf="@+id/callbackToCppTextView"
+        app:layout_constraintStart_toEndOf="@+id/callbackToCppTextView"
+        app:layout_constraintTop_toTopOf="@+id/callbackToCppTextView" />
+
+    <Button
+        android:id="@+id/failureCallbackCppButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:onClick="failureCallbackCppButtonClicked"
+        android:text="failure"
+        app:layout_constraintBottom_toBottomOf="@+id/successCallbackCppButton"
+        app:layout_constraintStart_toEndOf="@+id/successCallbackCppButton"
+        app:layout_constraintTop_toTopOf="@+id/successCallbackCppButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

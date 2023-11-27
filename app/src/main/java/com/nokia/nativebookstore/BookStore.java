@@ -68,6 +68,10 @@ public class BookStore {
 
     private native int calculateTotalRevenueInternal();
 
+    public native void onCallbackSuccessCppInternal(String message);
+
+    public native void onCallbackFailureCppInternal(String message);
+
     public Book getLastUpdatedBook() {
         return lastUpdatedBook;
     }
