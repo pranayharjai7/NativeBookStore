@@ -28,4 +28,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/booksTextView" />
 
+    <TextView
+        android:id="@+id/callbackTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Callback:"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/updatedBooksTextView" />
+
+    <Button
+        android:id="@+id/callbackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:onClick="callbackButtonClicked"
+        android:text="Last Book Check"
+        app:layout_constraintBottom_toBottomOf="@+id/callbackTextView"
+        app:layout_constraintStart_toEndOf="@+id/callbackTextView"
+        app:layout_constraintTop_toTopOf="@+id/callbackTextView" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

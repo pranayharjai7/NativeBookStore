@@ -1,5 +1,7 @@
 package com.nokia.nativebookstore;
 
+import com.nokia.nativebookstore.utils.CallbackJava;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +13,7 @@ public class BookStore {
     }
 
     private List<Book> books;
+    private Book lastUpdatedBook;
 
     public BookStore() {
         books = new ArrayList<>();
@@ -25,9 +28,7 @@ public class BookStore {
     }
 
     public Book findBookByISBN(double ISBN) {
-        List<Book> bookList = books.stream()
-                .filter(book -> book.getISBN() == ISBN)
-                .collect(Collectors.toList());
+        List<Book> bookList = books.stream().filter(book -> book.getISBN() == ISBN).collect(Collectors.toList());
         if (bookList.isEmpty()) {
             return null;
         }
@@ -55,13 +56,20 @@ public class BookStore {
         }
     }
 
+    public void onBookUpdate(CallbackJava callback) {
+        if (lastUpdatedBook != null) {
+            callback.onCallbackSuccess("Book updated: " + lastUpdatedBook);
+        } else {
+            callback.onCallbackFailure("No Book updates found!");
+        }
+    }
+
     private native void updateBookInternal(Book book);
 
     private native int calculateTotalRevenueInternal();
 
     @Override
     public String toString() {
-        return "books=\n" + books +
-                '}';
+        return "books=\n" + books + '}';
     }
 }

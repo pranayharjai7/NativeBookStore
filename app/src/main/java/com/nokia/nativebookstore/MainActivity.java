@@ -1,14 +1,17 @@
 package com.nokia.nativebookstore;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.nokia.nativebookstore.utils.CallbackJava;
 import com.nokia.nativebookstore.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
+    BookStore bookStore;
     private ActivityMainBinding binding;
 
     @Override
@@ -17,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        BookStore bookStore = new BookStore();
+        bookStore = new BookStore();
 
         Book book1 = new Book("Book1", "Author1", 1111, 50);
         Book book2 = new Book("Book2", "Author2", 1112, 150);
@@ -37,6 +40,20 @@ public class MainActivity extends AppCompatActivity {
         binding.updatedBooksTextView.setText(bookStore.toString());
 
         Book result = bookStore.findBookByISBN(1114);
-        if (result != null) Toast.makeText(this, "" + result.getPrice(), Toast.LENGTH_LONG).show();
+        if (result != null) Toast.makeText(this, "" + bookStore.calculateTotalRevenue(), Toast.LENGTH_LONG).show();
+    }
+
+    public void callbackButtonClicked(View view) {
+        bookStore.onBookUpdate(new CallbackJava() {
+            @Override
+            public void onCallbackSuccess(String message) {
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCallbackFailure(String message) {
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

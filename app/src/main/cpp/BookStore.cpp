@@ -39,6 +39,8 @@ jint BookStore::calculateTotalRevenue() {
 }
 
 void BookStore::updateBook(jobject bookObj) {
+    jfieldID lastUpdatedBook_ID = env->GetFieldID(bookStore, "lastUpdatedBook", "Lcom/nokia/nativebookstore/Book;");
+
     jclass book = env->GetObjectClass(bookObj);
 
     //Getting new fields from sent parameter "book"
@@ -65,6 +67,7 @@ void BookStore::updateBook(jobject bookObj) {
         env->SetObjectField(foundBook, author_ID, newAuthor);
         env->SetIntField(foundBook, price_ID, newPrice);
 
+        env->SetObjectField(bookStoreObj, lastUpdatedBook_ID, foundBook);
     } else {
         throwException("Book Not Found");
     }
