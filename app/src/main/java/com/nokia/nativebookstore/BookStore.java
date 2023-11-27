@@ -68,6 +68,14 @@ public class BookStore {
 
     private native int calculateTotalRevenueInternal();
 
+    public Book getLastUpdatedBook() {
+        return lastUpdatedBook;
+    }
+
+    public void setLastUpdatedBook(Book lastUpdatedBook) {
+        this.lastUpdatedBook = lastUpdatedBook;
+    }
+
     @Override
     public String toString() {
         return "books=\n" + books + '}';

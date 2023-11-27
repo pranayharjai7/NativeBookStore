@@ -39,7 +39,7 @@ jint BookStore::calculateTotalRevenue() {
 }
 
 void BookStore::updateBook(jobject bookObj) {
-    jfieldID lastUpdatedBook_ID = env->GetFieldID(bookStore, "lastUpdatedBook", "Lcom/nokia/nativebookstore/Book;");
+    jmethodID setLastUpdatedBook_ID = env->GetMethodID(bookStore, "setLastUpdatedBook", "(Lcom/nokia/nativebookstore/Book;)V");
 
     jclass book = env->GetObjectClass(bookObj);
 
@@ -67,7 +67,7 @@ void BookStore::updateBook(jobject bookObj) {
         env->SetObjectField(foundBook, author_ID, newAuthor);
         env->SetIntField(foundBook, price_ID, newPrice);
 
-        env->SetObjectField(bookStoreObj, lastUpdatedBook_ID, foundBook);
+        env->CallVoidMethod(bookStoreObj, setLastUpdatedBook_ID, foundBook);
     } else {
         throwException("Book Not Found");
     }
