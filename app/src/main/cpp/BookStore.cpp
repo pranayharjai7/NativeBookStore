@@ -18,13 +18,13 @@ jint BookStore::calculateTotalRevenue() {
     jobject books = BookStore::getBookList();
     jmethodID getPrice = env->GetMethodID(env->FindClass("com/nokia/nativebookstore/Book"),
                                           "getPrice", "()I");
-    jsize listSize = getListSize(books);
+    int listSize = getListSize(books);
     jmethodID get = env->GetMethodID(list, "get", "(I)Ljava/lang/Object;");
 
-    jint totalRevenue = 0;
-    for (jsize i = 0; i < listSize; i++) {
+    int totalRevenue = 0;
+    for (int i = 0; i < listSize; i++) {
         jobject book = env->CallObjectMethod(books, get, i);
-        jint price = env->CallIntMethod(book, getPrice);
+        int price = env->CallIntMethod(book, getPrice);
 
         //price exception
         if (price < 0) {
@@ -53,7 +53,6 @@ void BookStore::updateBook(jobject bookObj) {
     jfieldID price_ID = env->GetFieldID(book, "price", "I");
     jint newPrice = env->GetIntField(bookObj, price_ID);
 
-    //getting ISBN
     jfieldID ISBN_ID = env->GetFieldID(book, "ISBN", "D");
     jdouble ISBN = env->GetDoubleField(bookObj, ISBN_ID);
 
@@ -75,7 +74,7 @@ void BookStore::updateBook(jobject bookObj) {
 
 jobject BookStore::getBookList() {
     jmethodID getAllBooksMethodID = env->GetMethodID(bookStore, "getAllBooks",
-                                                     "()Ljava/util/List;");
+                                                     "()aewrhLjava/util/List;");
     return env->CallObjectMethod(bookStoreObj, getAllBooksMethodID);
 }
 
@@ -89,20 +88,3 @@ void BookStore::throwException(const char *message) {
         env->ThrowNew(exception, message);
     }
 }
-
-extern "C"
-JNIEXPORT jint JNICALL
-Java_com_nokia_nativebookstore_BookStore_calculateTotalRevenueInternal(JNIEnv *env,
-                                                                       jobject bookStoreObj) {
-    BookStore bookStore(env, bookStoreObj);
-    return bookStore.calculateTotalRevenue();
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_nokia_nativebookstore_BookStore_updateBookInternal(JNIEnv *env, jobject bookStoreObj,
-                                                            jobject bookObj) {
-    BookStore bookStore(env, bookStoreObj);
-    bookStore.updateBook(bookObj);
-}
-
